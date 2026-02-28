@@ -1,15 +1,13 @@
 {
   "version": 2,
-  "trailingSlash": true,
-  "cleanUrls": false,
   "rewrites": [
     {
       "source": "/uv/(.*)",
-      "destination": "/index.js"
+      "destination": "/src/index.js"
     },
     {
       "source": "/baremux/(.*)",
-      "destination": "/index.js"
+      "destination": "/src/index.js"
     },
     {
       "source": "/(.*)",
