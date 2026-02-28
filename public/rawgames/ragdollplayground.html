@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Ragdoll Playground</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #16181e; }
+        
+        #game-container { position: relative; width: 100%; height: 100%; }
+        
+        /* This covers the loading.png watermark */
+        #clean-loader {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #16181e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #f8cb00;
+            font-family: Arial, sans-serif;
+            transition: opacity 0.8s ease-out;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #333;
+            border-top: 5px solid #f8cb00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        iframe { border: none; width: 100%; height: 100%; }
+        .hidden { opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="clean-loader">
+        <div class="spinner"></div>
+        <h2>INITIALIZING PHYSICS...</h2>
+    </div>
+
+    <iframe id="game-frame" 
+        src="https://game.azgame.io/ragdoll-playground/" 
+        allow="autoplay; fullscreen; gamepad" 
+        allowfullscreen="true">
+    </iframe>
+</div>
+
+<script>
+    const loader = document.getElementById('clean-loader');
+    const frame = document.getElementById('game-frame');
+
+    // Wait for the iframe to load, then wait 5 more seconds to hide the AZ logo
+    frame.onload = function() {
+        setTimeout(() => {
+            loader.classList.add('hidden');
+            frame.focus();
+        }, 5000); // Adjust this number if the logo stays longer
+    };
+</script>
+
+</body>
+</html>

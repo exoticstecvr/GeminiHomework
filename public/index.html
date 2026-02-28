@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+        <title id="tab-title">Gemini</title>
+        
+        <meta name="theme-color" content="#68d98d" />
+        <link id="tab-favicon" rel="shortcut icon" href="favicon.ico" />
+
+        <script src="baremux/index.js" defer></script>
+        <script src="uv/uv.bundle.js" defer></script>
+        <script src="uv/uv.config.js" defer></script>
+        <script src="register-sw.js" defer></script>
+        <script src="search.js" defer></script>
+        <script src="index.js" defer></script>
+
+        <style>
+            :root {
+                --bg-green: #68d98d;
+                --accent-yellow: #d9d264;
+                --accent-blue: #30d7e6;
+                --black: #131314;
+                --sidebar-width: 90px;
+            }
+
+            body {
+                background: linear-gradient(-45deg, #68d98d, #52c478, #30d7e6, #68d98d);
+                background-size: 400% 400%;
+                animation: gradientBG 15s ease infinite;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                width: 100vw;
+                overflow: hidden;
+                font-family: 'Segoe UI', Tahoma, sans-serif;
+            }
+
+            @keyframes gradientBG {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+
+            .top-bar {
+                position: fixed;
+                top: 0;
+                width: 450px;
+                height: 55px;
+                background: white;
+                border: 4px solid var(--black);
+                border-top: none;
+                z-index: 100;
+                clip-path: polygon(0 0, 100% 0, 88% 100%, 12% 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            }
+
+            #clock-date {
+                font-size: 1.1rem;
+                font-weight: 900;
+                color: var(--black);
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            .sidebar {
+                height: 100%;
+                width: 0;
+                position: fixed;
+                z-index: 500;
+                top: 0;
+                left: 0;
+                background-color: white;
+                border-right: 6px solid var(--black);
+                overflow-x: hidden;
+                transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                display: flex;
+                flex-direction: column;
+                align-items: center; 
+            }
+
+            .closebtn {
+                width: 100%;
+                padding: 20px 0;
+                font-size: 50px;
+                font-weight: 900;
+                color: var(--black);
+                cursor: pointer;
+                text-decoration: none;
+                line-height: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                transition: 0.2s;
+            }
+
+            .closebtn:hover { 
+                background-color: #ff4747; 
+                color: white; 
+                transform: rotate(90deg); 
+            }
+
+            .sidebar a, .sidebar button {
+                padding: 20px 0;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                transition: 0.3s;
+                border: none;
+                background: none;
+                cursor: pointer;
+            }
+
+            .sidebar a:hover, .sidebar button:hover {
+                background-color: var(--accent-yellow);
+            }
+
+            .menu-icon {
+                width: 40px;
+                height: 40px;
+                object-fit: contain;
+                transition: transform 0.2s;
+            }
+
+            .sidebar a:hover .menu-icon {
+                transform: scale(1.2);
+            }
+
+            .openbtn {
+                font-size: 28px;
+                cursor: pointer;
+                background-color: white;
+                color: var(--black);
+                padding: 12px 18px;
+                border: 4px solid var(--black);
+                border-radius: 15px;
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 150;
+                box-shadow: 5px 5px 0px var(--black);
+                font-weight: 900;
+                transition: 0.2s;
+            }
+
+            .openbtn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0px var(--black); background: var(--accent-yellow); }
+
+            #main-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                max-width: 650px;
+                z-index: 10;
+            }
+
+            .logo {
+                height: auto;
+                max-height: 170px;
+                filter: drop-shadow(0 12px 20px rgba(0,0,0,0.2));
+                margin-bottom: 5px;
+                animation: float 4s ease-in-out infinite;
+            }
+
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-15px); }
+            }
+
+            h1 {
+                font-size: 5.5rem;
+                margin: 0 0 25px 0;
+                font-weight: 900;
+                text-transform: uppercase;
+                letter-spacing: -4px;
+                background: linear-gradient(to right, #0eff42, #30d7e6, #d9d264, #0eff42);
+                background-size: 200% auto;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: textFlow 4s linear infinite;
+                -webkit-text-stroke: 2.5px var(--black);
+                filter: drop-shadow(5px 5px 0px rgba(0,0,0,0.1));
+            }
+
+            @keyframes textFlow { to { background-position: 200% center; } }
+
+            #uv-form { width: 95%; margin-bottom: 35px; }
+
+            #uv-address {
+                width: 100%;
+                background: white;
+                border: 5px solid var(--black);
+                border-radius: 20px;
+                padding: 20px 30px;
+                font-size: 1.3rem;
+                font-weight: 700;
+                outline: none;
+                box-sizing: border-box;
+                box-shadow: 0 12px 0px var(--black);
+            }
+
+            .quick-links {
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .link-card {
+                background: white;
+                border: 4px solid var(--black);
+                width: 70px;
+                height: 70px;
+                border-radius: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: 0.2s;
+                cursor: pointer;
+                box-shadow: 0 6px 0px var(--black);
+            }
+
+            .link-card:hover { transform: translateY(-6px); background: var(--accent-yellow); box-shadow: 0 10px 0px var(--black); }
+            .link-icon { width: 45px; height: 45px; object-fit: contain; }
+
+            footer { position: absolute; bottom: 25px; font-weight: 900; font-size: 1rem; color: var(--black); }
+            #uv-frame { display: none; border: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1000; }
+        </style>
+    </head>
+
+    <body>
+        <div class="top-bar">
+            <div id="clock-date">SYNCING...</div>
+        </div>
+
+        <button class="openbtn" onclick="toggleNav()">☰</button>
+
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
+            
+            <a href="index.html" title="Home" style="background: var(--accent-blue)">
+                <img src="home.ico" class="menu-icon" alt="Home">
+            </a>
+            <a href="games.html" title="Games">
+                <img src="games.ico" class="menu-icon" alt="Games">
+            </a>
+            <a href="ai.html" title="AI">
+                <img src="ai.ico" class="menu-icon" alt="AI">
+            </a>
+            <a href="apps.html" title="Apps">
+                <img src="apps.ico" class="menu-icon" alt="Apps">
+            </a>
+            <a href="partners.html" title="Partners">
+                <img src="partners.ico" class="menu-icon" alt="Partners">
+            </a>
+            
+            <hr style="width: 60%; border: 2px solid var(--black); opacity: 0.3; margin: 20px 0;">
+            
+            <button onclick="cloakAboutBlank()" title="Tab Cloak">
+                <img src="cloak.ico" class="menu-icon" alt="Cloak">
+            </button>
+        </div>
+
+        <div id="main-content">
+            <img class="logo" src="uv.png" alt="Gemini Logo" />
+            <h1>Gemini</h1>
+
+            <form id="uv-form">
+                <input id="uv-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+                <input id="uv-address" type="text" placeholder="Search securely..." autocomplete="off" />
+            </form>
+
+            <div class="quick-links">
+                <div class="link-card" onclick="launch('https://www.google.com')"><img class="link-icon" src="google.ico" alt=""></div>
+                <div class="link-card" onclick="launch('https://discord.com')"><img class="link-icon" src="discord.ico" alt=""></div>
+                <div class="link-card" onclick="launch('https://www.youtube.com')"><img class="link-icon" src="youtube.ico" alt=""></div>
+                <div class="link-card" onclick="launch('https://duckduckgo.com')"><img class="link-icon" src="duckduckgo.ico" alt=""></div>
+                <div class="link-card" onclick="launch('https://poki.com')"><img class="link-icon" src="poki.ico" alt=""></div>
+            </div>
+
+            <footer>Ultimate fun website</footer>
+        </div>
+
+        <iframe id="uv-frame"></iframe>
+
+        <script>
+            function launch(url) {
+                const address = document.getElementById('uv-address');
+                address.value = url;
+                document.getElementById('uv-form').dispatchEvent(new Event('submit'));
+            }
+
+            let navOpen = false;
+            function toggleNav() {
+                const sidebar = document.getElementById("mySidebar");
+                sidebar.style.width = navOpen ? "0" : "var(--sidebar-width)";
+                navOpen = !navOpen;
+            }
+
+            function updateTime() {
+                const now = new Date();
+                const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                document.getElementById('clock-date').innerText = now.toLocaleString('en-US', options);
+            }
+            setInterval(updateTime, 1000);
+            updateTime();
+
+            /* CLEAN CLOAK: Only opens new tab, leaves original alone */
+            function cloakAboutBlank() {
+                const url = window.location.href;
+                const win = window.open();
+                if (!win) { 
+                    alert('Pop-up blocked! Allow pop-ups to open the stealth tab.'); 
+                    return; 
+                }
+                win.document.body.style.margin = '0';
+                win.document.body.style.height = '100vh';
+                const iframe = win.document.createElement('iframe');
+                iframe.style.border = 'none'; 
+                iframe.style.width = '100%'; 
+                iframe.style.height = '100%';
+                iframe.src = url;
+                win.document.body.appendChild(iframe);
+                // Original tab stays exactly where it is!
+            }
+        </script>
+    </body>
+</html>

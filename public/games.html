@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+        <title>Games | Gemini</title>
+        
+        <link rel="shortcut icon" href="favicon.ico" />
+
+        <style>
+            :root {
+                --bg-green: #68d98d;
+                --accent-yellow: #d9d264;
+                --accent-blue: #30d7e6;
+                --black: #131314;
+                --sidebar-width: 90px;
+            }
+
+            body {
+                background: linear-gradient(-45deg, #68d98d, #52c478, #30d7e6, #68d98d);
+                background-size: 400% 400%;
+                animation: gradientBG 15s ease infinite;
+                margin: 0;
+                display: flex;
+                height: 100vh;
+                width: 100vw;
+                overflow: hidden;
+                font-family: 'Segoe UI', Tahoma, sans-serif;
+            }
+
+            @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+            /* --- SIDEBAR --- */
+            .sidebar {
+                height: 100%;
+                width: var(--sidebar-width);
+                position: fixed;
+                z-index: 500;
+                top: 0;
+                left: 0;
+                background-color: white;
+                border-right: 6px solid var(--black);
+                display: flex;
+                flex-direction: column;
+                align-items: center; 
+                padding-top: 20px;
+            }
+
+            .sidebar a, .sidebar button {
+                padding: 20px 0;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                transition: 0.3s;
+                border: none;
+                background: none;
+                cursor: pointer;
+            }
+
+            .sidebar a:hover, .sidebar button:hover { background-color: var(--accent-yellow); }
+            .menu-icon { width: 40px; height: 40px; object-fit: contain; }
+
+            /* --- GAMES GRID --- */
+            #main-content {
+                margin-left: var(--sidebar-width);
+                width: calc(100% - var(--sidebar-width));
+                padding: 40px;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 25px;
+                overflow-y: auto;
+            }
+
+            .game-card {
+                background: white;
+                border: 4px solid var(--black);
+                border-radius: 20px;
+                padding: 15px;
+                text-align: center;
+                cursor: pointer;
+                transition: 0.2s;
+                box-shadow: 0 8px 0px var(--black);
+            }
+
+            .game-card:hover { transform: translateY(-5px); box-shadow: 0 12px 0px var(--black); background: var(--accent-yellow); }
+            .game-card img { width: 100%; border-radius: 12px; margin-bottom: 10px; border: 3px solid var(--black); }
+            .game-card span { font-weight: 900; text-transform: uppercase; color: var(--black); }
+
+            /* --- GAME OVERLAY PLAYER --- */
+            #game-player {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: var(--sidebar-width);
+                width: calc(100% - var(--sidebar-width));
+                height: 100vh;
+                background: var(--black);
+                z-index: 1000;
+            }
+
+            .game-controls {
+                height: 50px;
+                background: white;
+                display: flex;
+                align-items: center;
+                padding: 0 20px;
+                border-bottom: 4px solid var(--black);
+                justify-content: space-between;
+            }
+
+            .control-btn {
+                background: var(--accent-blue);
+                border: 3px solid var(--black);
+                padding: 5px 15px;
+                font-weight: 900;
+                cursor: pointer;
+                border-radius: 8px;
+                box-shadow: 3px 3px 0px var(--black);
+            }
+
+            .control-btn:hover { background: var(--accent-yellow); transform: translate(-1px, -1px); }
+
+            iframe { width: 100%; height: calc(100% - 54px); border: none; }
+        </style>
+    </head>
+
+    <body>
+        <div class="sidebar">
+            <a href="index.html" title="Home"><img src="home.ico" class="menu-icon"></a>
+            <a href="games.html" title="Games" style="background: var(--accent-blue)"><img src="games.ico" class="menu-icon"></a>
+            <a href="ai.html" title="AI"><img src="ai.ico" class="menu-icon"></a>
+            <a href="apps.html" title="Apps"><img src="apps.ico" class="menu-icon"></a>
+            <a href="partners.html" title="Partners"><img src="partners.ico" class="menu-icon"></a>
+            <hr style="width: 50%; border: 2px solid var(--black); opacity: 0.2; margin: 20px 0;">
+            <button onclick="cloakAboutBlank(currentURL)" title="Tab Cloak"><img src="cloak.ico" class="menu-icon"></button>
+        </div>
+
+        <div id="main-content">
+            <div class="game-card" onclick="playGame('rawgames/ragdollplayground.html', 'Ragdoll Playground')">
+                <img src="RawGames/Ragdoll Playground/logo.png" onerror="this.src='games.ico'">
+                <span>Ragdoll Playground</span>
+            </div>
+
+            </div>
+
+        <div id="game-player">
+            <div class="game-controls">
+                <span id="playing-title" style="font-weight: 900; text-transform: uppercase;">GAME PLAYER</span>
+                <div>
+                    <button class="control-btn" id="cloak-btn" onclick="openStealth()">OPEN IN NEW TAB</button>
+                    <button class="control-btn" style="background: #ff4747; color: white;" onclick="closeGame()">CLOSE</button>
+                </div>
+            </div>
+            <iframe id="game-iframe" src=""></iframe>
+        </div>
+
+        <script>
+            let currentURL = "";
+
+            function playGame(path, title) {
+                currentURL = path;
+                document.getElementById('playing-title').innerText = title;
+                document.getElementById('game-iframe').src = path;
+                document.getElementById('game-player').style.display = 'block';
+            }
+
+            function closeGame() {
+                document.getElementById('game-player').style.display = 'none';
+                document.getElementById('game-iframe').src = "";
+            }
+
+            function openStealth() {
+                const url = window.location.origin + '/' + currentURL;
+                const win = window.open();
+                if (!win) { alert('Pop-up blocked!'); return; }
+                
+                win.document.body.style.margin = '0';
+                win.document.body.style.height = '100vh';
+                const iframe = win.document.createElement('iframe');
+                iframe.style.border = 'none';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.src = url;
+                win.document.body.appendChild(iframe);
+            }
+        </script>
+    </body>
+</html>
