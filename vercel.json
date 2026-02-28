@@ -1,13 +1,22 @@
 {
   "version": 2,
-  "trailingSlash": true,
-  "cleanUrls": false,
-  "builds": [
-    { "src": "index.js", "use": "@vercel/node" },
-    { "src": "public/**", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/uv/(.*)", "dest": "index.js" },
-    { "src": "/(.*)", "dest": "/public/$1" }
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/public/index.html"
+    },
+    {
+      "source": "/uv/(.*)",
+      "destination": "/src/index.js"
+    },
+    {
+      "source": "/baremux/(.*)",
+      "destination": "/src/index.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/public/$1"
+    }
   ]
 }
